@@ -56,7 +56,7 @@ It doesn't backtest. **It learns by losing its own (demo) money.** It utilizes a
 
 ### 1. Clone & Setup Environment
 ```bash
-git clone https://github.com/autoea-online/-FUN-Deep-Reinforcement-Learning-Trading-Bot-PyTorch-x-MetaTrader-5-web-interface-.git
+git clone https://github.com/autoea-online/Quantum-Vanguard-HFT.git
 cd quantum-vanguard-hft
 pip install -r requirements.txt
 ```
@@ -98,6 +98,7 @@ This is a **Reinforcement Learning** bot. It learns through a process called "Ch
 
 ## ❄️ Brought to you by the creator of Snowfall
 If you're interested in no-code risk management, or build your own Expert Advisors without coding at **[AutoEA.online](https://autoea.online)**.
+
 
 
 
