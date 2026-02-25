@@ -96,8 +96,9 @@ Ce bot utilise **l'Apprentissage par Renforcement** (Reinforcement Learning). Il
 
 ---
 
-## ❄️ Proposé par le créateur de Snowfall
+## ❄️ 
 Si l'infrastructure de trading de niveau institutionnel vous intéresse, découvrez mon système privé **Snowfall**, ou créez vos propres Expert Advisors sans coder sur **[AutoEA.online](https://autoea.online)**.
+
 
 
 
