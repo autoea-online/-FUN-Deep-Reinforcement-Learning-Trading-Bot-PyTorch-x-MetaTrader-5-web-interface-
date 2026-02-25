@@ -23,6 +23,9 @@
 
 ---
 
+<div align="center">
+  <a href="https://ibb.co/ZpL2jzhc"><img src="https://i.ibb.co/NdVTv2LW/aaaaaaaaaaaaaaaaaa.png" alt="Dashboard Quantum Vanguard HFT" border="0" /></a>
+</div>
 ## ⚡ What is Quantum Vanguard HFT?
 
 Forget the 99% of GitHub "trading bots" that read outdated CSV files, use theoretical fake money, and rely on basic Moving Average crossovers. 
@@ -95,3 +98,4 @@ This is a **Reinforcement Learning** bot. It learns through a process called "Ch
 
 ## ❄️ Brought to you by the creator of Snowfall
 If you're interested in no-code risk management, or build your own Expert Advisors without coding at **[AutoEA.online](https://autoea.online)**.
+
