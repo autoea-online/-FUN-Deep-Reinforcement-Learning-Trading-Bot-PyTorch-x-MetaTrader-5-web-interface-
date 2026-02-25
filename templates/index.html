@@ -7,6 +7,7 @@
     <title>Quantum Vanguard | Institutional AI</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap"
         rel="stylesheet">
@@ -68,6 +69,41 @@
             font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
             letter-spacing: -0.02em;
+            transition: color 0.4s ease, opacity 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.35s ease forwards;
+        }
+
+        @keyframes pulseValue {
+            0% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.4;
+            }
+        }
+
+        .value-updating {
+            animation: pulseValue 0.4s ease;
         }
 
         .status-badge {
@@ -230,15 +266,15 @@
         </button>
     </header>
 
-    <!-- Main Grid -->
-    <main class="w-full max-w-7xl grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Main Container - Full Width Vertical Grid Pro -->
+    <main class="w-full max-w-[1600px] flex flex-col gap-6">
 
-        <!-- Left Column: Settings & Overrides (Span 1) -->
-        <div class="lg:col-span-1 flex flex-col gap-6">
+        <!-- ROW 1: System Status + 5 Metrics + Neural Canvas -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- System Core -->
-            <div class="glass-panel p-6">
-                <div class="flex justify-between items-center mb-6 pb-3 border-b border-border/60">
+            <!-- System Core (2/12) -->
+            <div class="glass-panel p-6 lg:col-span-2 flex flex-col gap-4">
+                <div class="pb-3 border-b border-border/60">
                     <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -247,168 +283,231 @@
                         System Core
                     </h2>
                 </div>
-
-                <div class="space-y-5">
+                <div class="space-y-4">
                     <div class="flex justify-between items-center">
                         <span class="text-sm text-gray-400">Status</span>
                         <span id="etat-ia" class="status-badge status-offline">Offline</span>
                     </div>
-
                     <div class="flex justify-between items-center">
-                        <span class="text-sm text-gray-400">Network Error (Loss)</span>
+                        <span class="text-sm text-gray-400">Network Loss</span>
                         <span id="sagesse-ia" class="data-value text-white">0.0000</span>
                     </div>
-
-                    <div class="flex flex-col gap-2 pt-2">
+                    <div class="flex flex-col gap-2">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs text-gray-400 uppercase tracking-wider">Exploration (Epsilon)</span>
+                            <span class="text-xs text-gray-400 uppercase tracking-wider">Epsilon</span>
                             <span id="chaos-val" class="data-value text-xs text-accent">20.0%</span>
                         </div>
                         <div class="w-full bg-surface/80 h-1.5 rounded-full overflow-hidden border border-border/50">
                             <div id="chaos-bar"
-                                class="h-full bg-gradient-to-r from-blue-500 to-accent transition-all duration-300 relative"
-                                style="width: 20%;">
-                                <div class="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
-                            </div>
+                                class="h-full bg-gradient-to-r from-blue-500 to-accent transition-all duration-300"
+                                style="width: 20%;"></div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Manual Overrides -->
-            <div class="glass-panel p-6">
-                <div class="flex justify-between items-center mb-6 pb-3 border-b border-border/60">
-                    <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div class="grid grid-cols-2 gap-2 mt-auto pt-4 border-t border-border/60">
+                    <button
+                        class="btn-modern py-2.5 bg-surface border border-success/30 text-success hover:bg-success/10 font-semibold text-xs rounded-xl flex items-center justify-center gap-1"
+                        onclick="forcerAction('achat')">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                        </svg>
-                        Manual Overrides
-                    </h2>
+                                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>LONG
+                    </button>
+                    <button
+                        class="btn-modern py-2.5 bg-surface border border-danger/30 text-danger hover:bg-danger/10 font-semibold text-xs rounded-xl flex items-center justify-center gap-1"
+                        onclick="forcerAction('vente')">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                        </svg>SHORT
+                    </button>
                 </div>
-                <div class="flex flex-col gap-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <button
-                            class="btn-modern py-2.5 bg-surface border border-success/30 text-success hover:bg-success/10 font-semibold text-xs rounded-xl flex items-center justify-center gap-2"
-                            onclick="forcerAction('achat')">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                            </svg>
-                            LONG
-                        </button>
-                        <button
-                            class="btn-modern py-2.5 bg-surface border border-danger/30 text-danger hover:bg-danger/10 font-semibold text-xs rounded-xl flex items-center justify-center gap-2"
-                            onclick="forcerAction('vente')">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                            </svg>
-                            SHORT
-                        </button>
-                    </div>
-                </div>
+                <button id="connexion-btn"
+                    class="btn-modern btn-primary py-2.5 bg-surface hover:bg-white/5 border border-accent/40 text-accent font-semibold text-xs rounded-xl flex items-center justify-center gap-2 group"
+                    onclick="connecterMT5()">
+                    <div class="w-2 h-2 rounded-full bg-accent group-hover:animate-ping"></div>
+                    INITIALIZE
+                </button>
             </div>
 
-        </div>
-
-        <!-- Center & Right Columns: Metrics, Stream, Positions (Span 3) -->
-        <div class="lg:col-span-3 flex flex-col gap-6">
-
-            <!-- Account Metrics -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div class="glass-panel p-5 flex flex-col justify-center relative overflow-hidden group">
-                    <div
-                        class="absolute right-0 top-0 w-16 h-16 bg-white/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
-                    </div>
-                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium mb-1">Balance</span>
-                    <span id="acc-balance" class="data-value text-2xl text-white">---</span>
+            <!-- 5 Metrics (7/12) -->
+            <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div class="glass-panel p-5 flex flex-col justify-center">
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium mb-1">Init
+                        Capital</span>
+                    <span id="acc-init" class="data-value text-xl text-gray-400">---</span>
                 </div>
-                <div class="glass-panel p-5 flex flex-col justify-center relative overflow-hidden group">
-                    <div
-                        class="absolute right-0 top-0 w-16 h-16 bg-white/5 rounded-bl-full -mr-8 -mt-8 transition-transform group-hover:scale-110">
-                    </div>
-                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium mb-1">Equity</span>
+                <div class="glass-panel p-5 flex flex-col justify-center">
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium mb-1">Balance</span>
+                    <span id="acc-balance" class="data-value text-xl text-white">---</span>
+                </div>
+                <div class="glass-panel p-5 flex flex-col justify-center border border-accent/30">
+                    <span class="text-[10px] text-accent font-bold uppercase tracking-widest mb-1">Live Equity</span>
                     <span id="acc-equity" class="data-value text-2xl text-white">---</span>
                 </div>
                 <div class="glass-panel p-5 flex flex-col justify-center">
-                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium mb-1">Used Margin</span>
-                    <span id="acc-margin" class="data-value text-xl text-gray-300">---</span>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium mb-1">Net Return</span>
+                    <span id="acc-net" class="data-value text-2xl font-bold">---</span>
                 </div>
                 <div class="glass-panel p-5 flex flex-col justify-center">
-                    <span class="text-xs text-gray-500 uppercase tracking-widest font-medium mb-1">Free Margin</span>
-                    <span id="acc-free" class="data-value text-xl text-white">---</span>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-widest font-medium mb-1">Margin
+                        Level</span>
+                    <span id="acc-margin" class="data-value text-xl text-white">---</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-grow">
-                <!-- Matrix Stream (Ticks) - Span 1 -->
-                <div class="glass-panel p-0 flex flex-col lg:col-span-1 h-[400px]">
-                    <div
-                        class="p-5 border-b border-border/60 flex justify-between items-center bg-surface/30 rounded-t-2xl">
-                        <h2
-                            class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                            Data Stream
-                        </h2>
-                        <span class="flex h-2 w-2 relative">
-                            <span
-                                class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span>
-                        </span>
-                    </div>
-
-                    <div id="div-vibrations" class="flex-grow overflow-y-auto font-mono text-xs p-3 space-y-1">
-                        <div class="text-gray-500 text-center mt-32 font-sans text-sm">Awaiting MT5 Initialization...
-                        </div>
-                    </div>
+            <!-- Neural Canvas (3/12) -->
+            <div class="glass-panel p-5 flex flex-col lg:col-span-3 h-64">
+                <div class="pb-2 mb-3 border-b border-border/60">
+                    <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                        </svg>
+                        Deep Q-Network
+                    </h2>
                 </div>
-
-                <!-- Active Positions - Span 2 -->
-                <div class="glass-panel p-0 flex flex-col lg:col-span-2 h-[400px]">
-                    <div
-                        class="p-5 border-b border-border/60 flex justify-between items-center bg-surface/30 rounded-t-2xl">
-                        <h2
-                            class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
-                            Active Portfolio
-                        </h2>
-                        <span id="pos-count"
-                            class="text-xs font-mono bg-border/50 px-2.5 py-1 rounded-md text-gray-300 border border-border">0
-                            OPEN</span>
-                    </div>
-
-                    <div class="overflow-x-auto overflow-y-auto flex-grow">
-                        <table class="w-full text-left border-collapse">
-                            <thead class="sticky top-0 bg-[#121216]/95 backdrop-blur z-10 border-b border-border/50">
-                                <tr class="text-[10px] text-gray-500 uppercase tracking-widest">
-                                    <th class="py-3 px-4 font-semibold">Ticket</th>
-                                    <th class="py-3 px-4 font-semibold">Asset</th>
-                                    <th class="py-3 px-4 font-semibold">Side</th>
-                                    <th class="py-3 px-4 font-semibold text-right">Size</th>
-                                    <th class="py-3 px-4 font-semibold text-right">Entry</th>
-                                    <th class="py-3 px-4 font-semibold text-right">Current</th>
-                                    <th class="py-3 px-4 font-semibold text-right">PnL (USD)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="div-positions" class="text-sm font-mono text-gray-300">
-                                <tr>
-                                    <td colspan="7" class="text-center py-20 text-gray-500 font-sans text-sm">No active
-                                        positions.</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="flex-grow w-full relative overflow-hidden bg-[#050508] rounded-lg border border-border/30">
+                    <canvas id="neural-canvas" class="absolute inset-0 w-full h-full"></canvas>
                 </div>
             </div>
-
         </div>
+
+        <!-- ROW 2: Equity & Balance Curve (Full Width) -->
+        <div class="glass-panel p-6 flex flex-col" style="height: 320px;">
+            <div class="flex justify-between items-center mb-3 pb-3 border-b border-border/60">
+                <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                    <svg class="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                    </svg>
+                    Equity &amp; Balance Evolution <span
+                        class="text-gray-600 font-normal normal-case">(Real-Time)</span>
+                </h2>
+                <span class="flex h-2 w-2 relative"><span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span><span
+                        class="relative inline-flex rounded-full h-2 w-2 bg-success"></span></span>
+            </div>
+            <div class="flex-grow w-full relative">
+                <canvas id="equity-chart"></canvas>
+            </div>
+        </div>
+
+        <!-- ROW 3: 3 Equal Charts (Learning | Exposure | Radar) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Learning Curve (1/3) -->
+            <div class="glass-panel p-5 flex flex-col" style="height: 320px;">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-border/60">
+                    <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 text-warning" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                        Learning Curve
+                    </h2>
+                </div>
+                <div class="flex-grow w-full relative">
+                    <canvas id="learning-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Portfolio Exposure Doughnut (1/3) -->
+            <div class="glass-panel p-5 flex flex-col" style="height: 320px;">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-border/60">
+                    <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                        </svg>
+                        Portfolio Exposure
+                    </h2>
+                </div>
+                <div class="flex-grow w-full relative flex justify-center items-center">
+                    <canvas id="exposure-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Tensor Radar (1/3) -->
+            <div class="glass-panel p-5 flex flex-col" style="height: 320px;">
+                <div class="flex justify-between items-center mb-3 pb-2 border-b border-border/60">
+                    <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                        </svg>
+                        Tensor Dimension Weights
+                    </h2>
+                </div>
+                <div class="flex-grow w-full relative flex justify-center items-center">
+                    <canvas id="radar-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROW 4: Active Positions (Full Width) -->
+        <div class="glass-panel p-0 flex flex-col" style="min-height: 360px;">
+            <div class="p-5 border-b border-border/60 flex justify-between items-center bg-surface/30 rounded-t-2xl">
+                <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    Active Portfolio
+                </h2>
+                <span id="pos-count"
+                    class="text-xs font-mono bg-border/50 px-2.5 py-1 rounded-md text-gray-300 border border-border">0
+                    OPEN</span>
+            </div>
+            <div class="overflow-x-auto flex-grow">
+                <table class="w-full text-left border-collapse">
+                    <thead class="sticky top-0 bg-[#121216]/95 backdrop-blur z-10 border-b border-border/50">
+                        <tr class="text-[10px] text-gray-500 uppercase tracking-widest">
+                            <th class="py-3 px-5 font-semibold">Ticket</th>
+                            <th class="py-3 px-5 font-semibold">Asset</th>
+                            <th class="py-3 px-5 font-semibold">Side</th>
+                            <th class="py-3 px-5 font-semibold text-right">Size (Lots)</th>
+                            <th class="py-3 px-5 font-semibold text-right">Duration</th>
+                            <th class="py-3 px-5 font-semibold text-right">Entry Price</th>
+                            <th class="py-3 px-5 font-semibold text-right">Current Price</th>
+                            <th class="py-3 px-5 font-semibold text-right">Floating PnL</th>
+                        </tr>
+                    </thead>
+                    <tbody id="div-positions" class="text-sm font-mono text-gray-300">
+                        <tr>
+                            <td colspan="8" class="text-center py-20 text-gray-500 font-sans text-sm">No active
+                                positions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROW 5: Data Stream (Full Width) -->
+        <div class="glass-panel p-0 flex flex-col" style="height: 280px;">
+            <div class="p-5 border-b border-border/60 flex justify-between items-center bg-surface/30 rounded-t-2xl">
+                <h2 class="text-xs uppercase tracking-widest text-gray-400 font-semibold flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    Live Data Stream
+                </h2>
+                <span class="flex h-2 w-2 relative"><span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75"></span><span
+                        class="relative inline-flex rounded-full h-2 w-2 bg-accent"></span></span>
+            </div>
+            <div id="div-vibrations"
+                class="flex-grow overflow-y-auto font-mono text-xs p-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-x-4 auto-rows-min">
+                <div class="col-span-full text-gray-500 text-center mt-16 font-sans text-sm">Awaiting MT5
+                    Initialization...</div>
+            </div>
+        </div>
+
+    </main>
+    </div>
+
+    </div>
     </main>
 
     <script>
@@ -443,6 +542,7 @@
             if (data.account && data.account.balance !== "Inconnue") {
                 const formatCurrency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 
+                document.getElementById('acc-init').textContent = formatCurrency(data.account.capital_journee);
                 document.getElementById('acc-balance').textContent = formatCurrency(data.account.balance);
 
                 let eqEl = document.getElementById('acc-equity');
@@ -459,62 +559,154 @@
                     eqEl.classList.add('text-white');
                 }
 
-                document.getElementById('acc-margin').textContent = formatCurrency(data.account.margin);
-                document.getElementById('acc-free').textContent = formatCurrency(data.account.free_margin);
+                let netReturn = parseFloat(data.account.equity) - parseFloat(data.account.capital_journee);
+                let netEl = document.getElementById('acc-net');
+                netEl.textContent = (netReturn > 0 ? "+" : "") + formatCurrency(netReturn);
+                netEl.className = netReturn > 0 ? "data-value text-2xl font-bold text-success" : (netReturn < 0 ? "data-value text-2xl font-bold text-danger" : "data-value text-2xl font-bold text-gray-400");
+
+                document.getElementById('acc-margin').textContent = data.account.margin > 0 ? (data.account.equity / data.account.margin * 100).toFixed(2) + "%" : "---";
+
+                // Update Equity Chart
+                const now = new Date();
+                const timeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0') + ':' + now.getSeconds().toString().padStart(2, '0');
+
+                equityChart.data.labels.push(timeStr);
+                equityChart.data.datasets[0].data.push(data.account.equity); // Equity Line
+                equityChart.data.datasets[1].data.push(data.account.balance); // Balance Line
+
+                if (equityChart.data.labels.length > 50) {
+                    equityChart.data.labels.shift();
+                    equityChart.data.datasets[0].data.shift();
+                    equityChart.data.datasets[1].data.shift();
+                }
+                equityChart.update();
             }
 
-            // Data Stream Updates
+            // Data Stream: prepend new ticks, remove old ones (no full innerHTML reset)
             const vp = document.getElementById('div-vibrations');
-            vp.innerHTML = '';
-            let startIndex = Math.max(0, data.vibrations.length - 20);
-            for (let i = data.vibrations.length - 1; i >= startIndex; i--) {
-                let v = data.vibrations[i];
-                let bgClass = i % 2 === 0 ? "bg-surface/40" : "bg-transparent";
+            const MAX_TICKS = 24;
+            // Track last known highest tick id
+            const currentIds = new Set(Array.from(vp.querySelectorAll('[data-tick-id]')).map(el => el.dataset.tickId));
+            const newTicks = data.vibrations.slice(-MAX_TICKS).reverse();
+            newTicks.forEach(v => {
+                const idStr = String(v.id);
+                if (!currentIds.has(idStr)) {
+                    const el = document.createElement('div');
+                    el.dataset.tickId = idStr;
+                    el.className = 'flex justify-between items-center px-3 py-1.5 rounded-md bg-surface/40 fade-in';
+                    el.innerHTML = `<span class="text-gray-500 text-[10px]">#${v.id}</span><span class="text-white font-medium">${v.symbole}</span><span class="text-gray-400">A:<span class="text-white ml-1">${v.prix.toFixed(5)}</span></span>`;
+                    vp.insertBefore(el, vp.firstChild);
+                }
+            });
+            // Remove stale ticks beyond MAX_TICKS
+            const allTicks = vp.querySelectorAll('[data-tick-id]');
+            if (allTicks.length > MAX_TICKS) {
+                for (let i = MAX_TICKS; i < allTicks.length; i++) allTicks[i].remove();
+            }
+            // Remove placeholder if we have ticks
+            const placeholder = vp.querySelector('.col-span-full, .text-center');
+            if (placeholder && allTicks.length > 0) placeholder.remove();
 
-                vp.innerHTML += `
-                    <div class="flex justify-between items-center ${bgClass} px-3 py-1.5 rounded-md hover:bg-surface/80 transition-colors">
-                        <span class="text-gray-500 text-[10px]">#${v.id}</span>
-                        <span class="text-white font-medium">${v.symbole}</span>
-                        <span class="text-gray-400">A:<span class="text-white ml-1">${v.prix.toFixed(5)}</span></span>
-                    </div>
-                `;
+            // --- AI Learning Curve & Radar Updates ---
+            if (data.chaos !== undefined && data.sagesse !== undefined) {
+                const timeStr = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+                learningChart.data.labels.push(timeStr);
+                learningChart.data.datasets[0].data.push(data.sagesse); // Wisdom
+                learningChart.data.datasets[1].data.push(data.chaos * 100); // Chaos %
+
+                if (learningChart.data.labels.length > 50) {
+                    learningChart.data.labels.shift();
+                    learningChart.data.datasets[0].data.shift();
+                    learningChart.data.datasets[1].data.shift();
+                }
+                learningChart.update();
             }
 
-            // Active Positions Update
+            // Radar matrix dynamic visual simulation (Real Data)
+            if (data.radar_weights) {
+                radarChart.data.datasets[0].data = [
+                    data.radar_weights.momentum,
+                    data.radar_weights.volatility,
+                    data.radar_weights.sma_dist,
+                    data.radar_weights.rsi_div,
+                    data.radar_weights.stochastics
+                ];
+                radarChart.update();
+            }
+
+            // --- Positions: DOM Reconciliation (no full reset = no flicker) ---
             const positionsDiv = document.getElementById('div-positions');
             document.getElementById('pos-count').textContent = data.positions_ouvertes.length + " OPEN";
 
+            let longVol = 0;
+            let shortVol = 0;
+
             if (data.positions_ouvertes.length === 0) {
-                positionsDiv.innerHTML = `<tr><td colspan="7" class="text-center py-20 text-gray-500 font-sans text-sm">No active positions.</td></tr>`;
+                if (!positionsDiv.querySelector('.no-pos-row')) {
+                    positionsDiv.innerHTML = `<tr class="no-pos-row"><td colspan="8" class="text-center py-20 text-gray-500 font-sans text-sm">No active positions.</td></tr>`;
+                }
             } else {
-                positionsDiv.innerHTML = '';
+                // Remove placeholder if present
+                const placeholder = positionsDiv.querySelector('.no-pos-row');
+                if (placeholder) placeholder.remove();
+
+                const seenTickets = new Set();
+
                 data.positions_ouvertes.forEach(p => {
+                    const ticket = String(p.ticket);
+                    seenTickets.add(ticket);
+
                     let profVal = parseFloat(p.profit);
                     let profClass = profVal > 0 ? 'text-success bg-success/10' : (profVal < 0 ? 'text-danger bg-danger/10' : 'text-gray-400');
                     let profSign = profVal > 0 ? '+' : '';
-
                     let isBuy = p.type.toLowerCase().includes('achat');
                     let typeColor = isBuy ? 'text-success' : 'text-danger';
                     let typeLabel = isBuy ? 'LONG' : 'SHORT';
                     if (p.type.includes('Défensé')) typeLabel += ' (BE)';
 
-                    positionsDiv.innerHTML += `
-                        <tr class="table-row-hover border-b border-border/30 last:border-0">
-                            <td class="py-3 px-4 text-gray-500 text-xs">#${p.ticket}</td>
-                            <td class="py-3 px-4 text-white font-medium">${p.symbole}</td>
-                            <td class="py-3 px-4 font-bold text-xs ${typeColor}">${typeLabel}</td>
-                            <td class="py-3 px-4 text-right text-white">${parseFloat(p.volume).toFixed(2)}</td>
-                            <td class="py-3 px-4 text-right text-gray-400">${parseFloat(p.open_price).toFixed(5)}</td>
-                            <td class="py-3 px-4 text-right text-white">${parseFloat(p.current_price).toFixed(5)}</td>
-                            <td class="py-3 px-4 text-right">
-                                <span class="px-2 py-1 rounded inline-block min-w-[70px] font-bold ${profClass}">
-                                    ${profSign}${profVal.toFixed(2)}
-                                </span>
-                            </td>
-                        </tr>
+                    if (isBuy) longVol += parseFloat(p.volume);
+                    else shortVol += parseFloat(p.volume);
+
+                    // Duration
+                    let durationStr = "0s";
+                    if (p.time_setup) {
+                        const diffSec = Math.floor((Date.now() - p.time_setup * 1000) / 1000);
+                        if (diffSec > 3600) durationStr = Math.floor(diffSec / 3600) + "h " + Math.floor((diffSec % 3600) / 60) + "m";
+                        else if (diffSec > 60) durationStr = Math.floor(diffSec / 60) + "m " + (diffSec % 60) + "s";
+                        else durationStr = diffSec + "s";
+                    }
+
+                    let existingRow = positionsDiv.querySelector(`tr[data-ticket="${ticket}"]`);
+                    if (!existingRow) {
+                        // New position: insert row and fade it in
+                        existingRow = document.createElement('tr');
+                        existingRow.dataset.ticket = ticket;
+                        existingRow.className = 'table-row-hover border-b border-border/30 last:border-0 fade-in';
+                        positionsDiv.appendChild(existingRow);
+                    }
+                    // Update row content in-place (no flash)
+                    existingRow.innerHTML = `
+                        <td class="py-3 px-5 text-gray-500 text-xs">#${p.ticket}</td>
+                        <td class="py-3 px-5 text-white font-medium">${p.symbole}</td>
+                        <td class="py-3 px-5 font-bold text-xs ${typeColor}">${typeLabel}</td>
+                        <td class="py-3 px-5 text-right text-white">${parseFloat(p.volume).toFixed(2)}</td>
+                        <td class="py-3 px-5 text-right text-gray-400 text-xs">${durationStr}</td>
+                        <td class="py-3 px-5 text-right text-gray-400">${parseFloat(p.open_price).toFixed(5)}</td>
+                        <td class="py-3 px-5 text-right text-white">${parseFloat(p.current_price).toFixed(5)}</td>
+                        <td class="py-3 px-5 text-right"><span class="px-2 py-1 rounded inline-block min-w-[70px] font-bold ${profClass}">${profSign}${profVal.toFixed(2)}</span></td>
                     `;
                 });
+
+                // Remove rows for closed positions
+                positionsDiv.querySelectorAll('tr[data-ticket]').forEach(row => {
+                    if (!seenTickets.has(row.dataset.ticket)) row.remove();
+                });
             }
+
+            // Update Exposure Pie Chart
+            exposureChart.data.datasets[0].data = longVol === 0 && shortVol === 0 ? [] : [longVol, shortVol];
+            exposureChart.update();
         });
 
         function connecterMT5() {
@@ -535,11 +727,359 @@
                 });
         }
 
+        // --- LEARNING CHART INITIALIZATION ---
+        const ctxLearn = document.getElementById('learning-chart').getContext('2d');
+        const learningChart = new Chart(ctxLearn, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Wisdom (Accuracy)',
+                        data: [],
+                        borderColor: '#8b5cf6', // Violet
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Chaos (Exploration %)',
+                        data: [],
+                        borderColor: '#f59e0b', // Amber/Warning
+                        borderDash: [5, 5],
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 0 },
+                plugins: {
+                    legend: {
+                        labels: { color: '#9ca3af', font: { family: "'JetBrains Mono', monospace", size: 10 } }
+                    },
+                    tooltip: {
+                        mode: 'index', intersect: false, backgroundColor: 'rgba(18, 18, 22, 0.9)', titleColor: '#9ca3af', bodyColor: '#fff', borderColor: '#2a2a32', borderWidth: 1
+                    }
+                },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#6b7280', font: { family: "'JetBrains Mono', monospace", size: 10 } }
+                    }
+                },
+                interaction: { mode: 'nearest', axis: 'x', intersect: false }
+            }
+        });
+
+        // --- RADAR CHART INITIALIZATION ---
+        const ctxRadar = document.getElementById('radar-chart').getContext('2d');
+        const radarChart = new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                labels: ['Momentum', 'Volatility', 'SMA Dist', 'RSI Div', 'Stochastics'],
+                datasets: [{
+                    label: 'Active Network Weights',
+                    data: [50, 60, 45, 80, 55],
+                    backgroundColor: 'rgba(59, 130, 246, 0.2)', // Blue tint
+                    borderColor: '#3b82f6',
+                    pointBackgroundColor: '#10b981', // Green dots
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#10b981'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                        pointLabels: { color: '#9ca3af', font: { family: "'JetBrains Mono', monospace", size: 9 } },
+                        ticks: { display: false, min: 0, max: 100 }
+                    }
+                }
+            }
+        });
+
+        // --- EQUITY CHART INITIALIZATION ---
+        const ctxEq = document.getElementById('equity-chart').getContext('2d');
+        const equityChart = new Chart(ctxEq, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Gross Equity ($)',
+                        data: [],
+                        borderColor: '#10b981', // Green
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Closed Balance ($)',
+                        data: [],
+                        borderColor: '#3b82f6', // Blue
+                        borderWidth: 1,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: { duration: 0 },
+                plugins: {
+                    legend: {
+                        labels: { color: '#9ca3af', font: { family: "'JetBrains Mono', monospace", size: 10 } }
+                    }
+                },
+                scales: {
+                    x: { display: false },
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)', drawBorder: false },
+                        ticks: { color: '#6b7280', font: { family: "'JetBrains Mono', monospace", size: 10 } }
+                    }
+                }
+            }
+        });
+
+        // --- EXPOSURE CHART INITIALIZATION ---
+        const ctxExp = document.getElementById('exposure-chart').getContext('2d');
+        const exposureChart = new Chart(ctxExp, {
+            type: 'doughnut',
+            data: {
+                labels: ['LONG Volume', 'SHORT Volume'],
+                datasets: [{
+                    data: [], // Updated dynamically
+                    backgroundColor: ['rgba(16, 185, 129, 0.8)', 'rgba(239, 68, 68, 0.8)'],
+                    borderColor: '#121216',
+                    borderWidth: 2,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(18, 18, 22, 0.9)',
+                        titleColor: '#9ca3af',
+                        bodyColor: '#fff',
+                        bodyFont: { family: "'JetBrains Mono', monospace", size: 12 },
+                        callbacks: {
+                            label: function (context) {
+                                return ' ' + context.label + ': ' + context.raw + ' Lots';
+                            }
+                        }
+                    }
+                }
+            },
+            plugins: [{
+                id: 'textCenter',
+                beforeDraw: function (chart) {
+                    if (chart.data.datasets[0].data.length === 0) {
+                        var width = chart.width, height = chart.height, ctx = chart.ctx;
+                        ctx.restore();
+                        var fontSize = 0.8;
+                        ctx.font = "600 " + fontSize + "rem 'Inter', sans-serif";
+                        ctx.textBaseline = "middle";
+                        ctx.fillStyle = "#6b7280";
+                        var text = "FLAT", textX = Math.round((width - ctx.measureText(text).width) / 2), textY = height / 2;
+                        ctx.fillText(text, textX, textY);
+                        ctx.save();
+                    }
+                }
+            }]
+        });
+
         function forcerAction(dir) {
             fetch('/api/materialiser/' + dir)
                 .then(r => r.json())
                 .then(d => alert("Override Status: " + d.message));
         }
+
+        // --- NEURAL NETWORK CANVAS ANIMATION ---
+        const canvas = document.getElementById('neural-canvas');
+        const ctx = canvas.getContext('2d', { alpha: false }); // Optimize performance
+
+        let nodes = [];
+        let edges = [];
+        let animationFrameId;
+
+        // Network Architecture: [Inputs, Hidden1, Hidden2, Outputs]
+        const layers = [10, 16, 16, 6]; // Visual representation (we don't draw all 128 to save RAM)
+
+        function initNetwork() {
+            // Respect device pixel ratio for crisp rendering
+            const dpr = window.devicePixelRatio || 1;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.scale(dpr, dpr);
+            canvas.style.width = `${rect.width}px`;
+            canvas.style.height = `${rect.height}px`;
+
+            const width = rect.width;
+            const height = rect.height;
+            nodes = [];
+            edges = [];
+
+            const paddingX = width * 0.1;
+            const paddingY = height * 0.15;
+            const usableWidth = width - (paddingX * 2);
+            const usableHeight = height - (paddingY * 2);
+
+            const layerSpacing = usableWidth / (layers.length - 1);
+
+            // Generate Nodes
+            layers.forEach((nodeCount, layerIndex) => {
+                const x = paddingX + (layerIndex * layerSpacing);
+                const nodeSpacing = nodeCount > 1 ? usableHeight / (nodeCount - 1) : 0;
+                const startY = nodeCount > 1 ? paddingY : height / 2;
+
+                for (let i = 0; i < nodeCount; i++) {
+                    const y = startY + (i * nodeSpacing);
+                    nodes.push({
+                        id: `${layerIndex}-${i}`,
+                        x: x,
+                        y: y,
+                        layer: layerIndex,
+                        baseRadius: layerIndex === 0 || layerIndex === layers.length - 1 ? 2.5 : 1.5,
+                        activation: Math.random(), // 0 to 1
+                        pulsePhase: Math.random() * Math.PI * 2
+                    });
+                }
+            });
+
+            // Generate Edges (Connections between adjacent layers)
+            for (let i = 0; i < layers.length - 1; i++) {
+                const currentLayerNodes = nodes.filter(n => n.layer === i);
+                const nextLayerNodes = nodes.filter(n => n.layer === i + 1);
+
+                // Don't connect everything to save performance, just a dense subset
+                currentLayerNodes.forEach(nodeA => {
+                    nextLayerNodes.forEach(nodeB => {
+                        if (Math.random() > 0.4) { // 60% connection density
+                            edges.push({
+                                source: nodeA,
+                                target: nodeB,
+                                weight: Math.random(), // 0 to 1
+                                activity: 0
+                            });
+                        }
+                    });
+                });
+            }
+        }
+
+        function drawNetwork(time) {
+            const width = canvas.width / (window.devicePixelRatio || 1);
+            const height = canvas.height / (window.devicePixelRatio || 1);
+
+            // Clear background
+            ctx.fillStyle = '#050508';
+            ctx.fillRect(0, 0, width, height);
+
+            // Animate Edges
+            ctx.lineWidth = 0.5;
+            edges.forEach(edge => {
+                // Randomly trigger activation spikes matching the "Chaos" vibe
+                if (connected && Math.random() < 0.01) {
+                    edge.activity = 1.0;
+                }
+                edge.activity *= 0.95; // Decay
+
+                const alpha = 0.05 + (edge.activity * 0.4);
+
+                // Color flows from blue (input) to purple (hidden) to green (output action)
+                let r = 59 + (edge.activity * 50);
+                let g = 130 - (edge.activity * 100);
+                let b = 246 + (edge.activity * 10);
+
+                if (edge.source.layer === layers.length - 2) {
+                    // Final layer connections flare green/red based on simulated conviction
+                    g = 185; r = 16; b = 129;
+                }
+
+                ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${alpha})`;
+                ctx.beginPath();
+                ctx.moveTo(edge.source.x, edge.source.y);
+                ctx.lineTo(edge.target.x, edge.target.y);
+                ctx.stroke();
+            });
+
+            // Animate Nodes
+            nodes.forEach(node => {
+                node.pulsePhase += 0.05;
+                const pulse = Math.sin(node.pulsePhase) * 0.5 + 0.5; // 0 to 1
+
+                // Update activation slowly
+                node.activation += (Math.random() - 0.5) * 0.1;
+                node.activation = Math.max(0, Math.min(1, node.activation));
+
+                let glowSize = node.baseRadius;
+                let fillStyle = 'rgba(59, 130, 246, 0.4)'; // Default Blue
+
+                if (connected) {
+                    glowSize += (node.activation * 2) + pulse;
+                    if (node.layer === layers.length - 1) {
+                        fillStyle = 'rgba(16, 185, 129, 0.8)'; // Output Nodes (Green = Action)
+                        if (node.activation > 0.8) {
+                            ctx.shadowColor = '#10b981';
+                            ctx.shadowBlur = 10;
+                        } else {
+                            ctx.shadowBlur = 0;
+                        }
+                    } else {
+                        fillStyle = `rgba(${59 + node.activation * 100}, ${130 - node.activation * 50}, 246, ${0.4 + node.activation * 0.6})`;
+                        ctx.shadowBlur = 0;
+                    }
+                } else {
+                    fillStyle = 'rgba(100, 100, 110, 0.3)'; // Offline state
+                }
+
+                ctx.fillStyle = fillStyle;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, glowSize, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            ctx.shadowBlur = 0; // Reset
+            animationFrameId = requestAnimationFrame(drawNetwork);
+        }
+
+        // Handle Resize
+        window.addEventListener('resize', () => {
+            cancelAnimationFrame(animationFrameId);
+            initNetwork();
+            drawNetwork(0);
+        });
+
+        // Initialize
+        setTimeout(() => {
+            initNetwork();
+            drawNetwork(0);
+        }, 100);
+
     </script>
 </body>
 

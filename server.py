@@ -90,6 +90,13 @@ conscience_globale = {
         "equity": "Infinie",
         "margin": "Vide",
         "free_margin": "Infini"
+    },
+    "radar_weights": {
+        "momentum": 50,
+        "volatility": 50,
+        "sma_dist": 50,
+        "rsi_div": 50,
+        "stochastics": 50
     }
 }
 
@@ -114,7 +121,8 @@ def respiration_cosmique():
                         "balance": round(acc.balance, 2),
                         "equity": round(acc.equity, 2),
                         "margin": round(acc.margin, 2),
-                        "free_margin": round(acc.margin_free, 2)
+                        "free_margin": round(acc.margin_free, 2),
+                        "capital_journee": round(conscience_globale["capital_journee"], 2)
                     }
                     
                     # CAGE DE FER 3: LE KILLSWITCH DRAWDOWN 4%
@@ -213,6 +221,19 @@ def respiration_cosmique():
                         slope = (covariance / variance_x) * 10000 if variance_x > 0 else 0
                         features.append(slope)
 
+                    # --- RADAR MATRIX EXTRACTOR (Pour le Dashboard) ---
+                    # On prend une moyenne absolue de certains blocs de features ramassés au dessus pour voir
+                    # dans quel état macro-économique le tenseur se trouve actuellement (sur 100).
+                    # Index: Momentum[1:11], SMA[11:21], Vol[31:36], Stoch[36:41], RSI[41:46]
+                    try:
+                        conscience_globale["radar_weights"]["momentum"] = min(100, max(0, 50 + sum(features[1:11]) * 5))
+                        conscience_globale["radar_weights"]["sma_dist"] = min(100, max(0, 50 + sum(features[11:21]) * 2))
+                        conscience_globale["radar_weights"]["volatility"] = min(100, max(0, sum(features[31:36]) * 15))
+                        conscience_globale["radar_weights"]["stochastics"] = min(100, max(0, 50 + sum(features[36:41]) / 5))
+                        conscience_globale["radar_weights"]["rsi_div"] = min(100, max(0, 50 + sum(features[41:46]) * 5))
+                    except Exception as e:
+                        pass # Si les index varient dans le futur
+
                     # --- LES 5 MESURES INTERNES (La Conscience de Soi) ---
                     profit_latent = sum(p["profit"] for p in positions_eur) if nb_pos > 0 else 0.0
                     
@@ -303,16 +324,35 @@ def respiration_cosmique():
                         # L'IA a essayé d'ouvrir dans le sens inverse (Interdit par la Cage de Fer)
                         recompense_immediate -= 50 # Punition légère pour l'erreur logique
                     elif action == 5 and nb_pos > 0: # Sniper Strike (Tout fermer)
-                        # PUNITION DE L'IMPATIENCE : Si trade ouvert depuis moins de 1h (<3600 sec) et profit faible
-                        if temps_moyen < 3600 and profit_latent < 50:
-                            print("⚡ PUNITION DIVINE : Fermeture prématurée interdite (-10000).")
-                            recompense_immediate -= 10000
-                        else:
-                            print("💥 IA [FERMETURE STRATÉGIQUE] - Liquidation Justifiée !")
+                        # --- LA RÉCOLTE DIVINE (Règle Épique de Fermeture) ---
+                        if profit_latent > 0:
+                            print(f"🌟 RÉCOLTE DIVINE : L'IA encaisse {round(profit_latent, 2)}$ de gains purs !")
                             for pos in positions_eur:
                                 mt5.order_send({"action": mt5.TRADE_ACTION_DEAL, "position": pos["ticket"], "symbol": "EURUSD", "volume": pos["volume"], "type": mt5.ORDER_TYPE_SELL if "Achat" in pos["type"] else mt5.ORDER_TYPE_BUY, "price": tick_eur.bid if "Achat" in pos["type"] else tick_eur.ask, "deviation": 20, "magic": 777, "type_time": mt5.ORDER_TIME_GTC, "type_filling": mt5.ORDER_FILLING_FOK})
-                            if profit_latent > 50: recompense_immediate += 5000 # Super Strike !
-                            elif profit_latent < -10: recompense_immediate -= 2000 # Mauvais Strike (Cut loss)
+                            
+                            # Magie Multiplicatrice: Plus le gain est gros, plus l'exposant est puissant
+                            puissance_magique = 1.2 + (profit_latent / 300.0)
+                            try:
+                                scaling_reward = math.pow(profit_latent, min(2.0, puissance_magique)) * 50
+                            except:
+                                scaling_reward = profit_latent * 100
+                            
+                            recompense_immediate += scaling_reward
+                            
+                            # Bonus de Vélocité Quantique (HFT Scalp GodTier)
+                            if temps_moyen < 300 and profit_latent > 15: # Profit rapide en moins de 5 minutes
+                                print("⚡ VELOCITÉ QUANTIQUE : Scalp parfait en temps record ! (Multiplier x3)")
+                                recompense_immediate *= 3.0
+                        else:
+                            # Punition de l'impatience UNIQUEMENT si l'IA clôture en perte pour rien
+                            if temps_moyen < 3600 and profit_latent < -10:
+                                print("⚡ PUNITION DIVINE : Fermeture prématurée dans le rouge (-10000).")
+                                recompense_immediate -= 10000
+                            else:
+                                print("💥 IA [FERMETURE DE SÉCURITÉ] - Liquidation d'un mauvais trade.")
+                                for pos in positions_eur:
+                                    mt5.order_send({"action": mt5.TRADE_ACTION_DEAL, "position": pos["ticket"], "symbol": "EURUSD", "volume": pos["volume"], "type": mt5.ORDER_TYPE_SELL if "Achat" in pos["type"] else mt5.ORDER_TYPE_BUY, "price": tick_eur.bid if "Achat" in pos["type"] else tick_eur.ask, "deviation": 20, "magic": 777, "type_time": mt5.ORDER_TIME_GTC, "type_filling": mt5.ORDER_FILLING_FOK})
+                                recompense_immediate -= abs(profit_latent) * 10
                     elif action == 6 and nb_pos > 0: # Scale-Out 50% du plus vieux trade
                         pos_vieille = sorted(mt5.positions_get(symbol="EURUSD"), key=lambda x: x.time)[0]
                         if pos_vieille.volume >= 0.02:
