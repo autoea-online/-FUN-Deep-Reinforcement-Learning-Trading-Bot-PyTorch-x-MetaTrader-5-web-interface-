@@ -42,8 +42,7 @@ Il ne fait pas de backtest. **Il apprend en perdant son propre argent (sur compt
    - **Killswitch Drawdown 4% Journalier :** Si l'équité chute de 4% par rapport au solde d'ouverture du jour, l'IA est endormie de force jusqu'à minuit.
    - **Stop Loss Dur Continu de 1% :** Chaque position ouverte par le réseau de neurones est protégée mécaniquement par un Stop Loss strict de 1% du capital, calculé dynamiquement selon la taille du lot à l'exécution.
    - **Directionnalité Stricte :** Le Hedging (couverture) est interdit. L'IA ne peut gérer qu'un seul biais directionnel à la fois (Achat OU Vente).
-4. **La Punition de l'Impatience (Perte de -10 000) :** L'IA possède une action "Sniper Strike" pour fermer tous les trades d'un coup. Si elle l'utilise avant qu'une heure ne se soit écoulée *sans* un profit pré-déterminé significatif, l'IA subit une énorme pénalité neuronale de `-10 000`, la forçant à apprendre la patience algorithmique absolue.
-5. **Dashboard en Glassmorphism Temps Réel :** Fini les fenêtres de terminal moches. Une interface HTML/Tailwind CSS au design "2025 Institutional", servie via Flask & Socket.io, fournit la télémétrie en direct sur le déclin de l'Epsilon (taux de Chaos/Exploration), la confiance neuronale, et l'ingestion des ticks.
+4. **Dashboard en Glassmorphism Temps Réel :** Fini les fenêtres de terminal moches. Une interface HTML/Tailwind CSS au design "2025 Institutional", servie via Flask & Socket.io, fournit la télémétrie en direct sur le déclin de l'Epsilon (taux de Chaos/Exploration), la confiance neuronale, et l'ingestion des ticks.
 
 ---
 
@@ -98,6 +97,7 @@ Ce bot utilise **l'Apprentissage par Renforcement** (Reinforcement Learning). Il
 
 ## ❄️ 
 Si l'infrastructure de trading de niveau institutionnel vous intéresse, découvrez mon système privé **Snowfall**, ou créez vos propres Expert Advisors sans coder sur **[AutoEA.online](https://autoea.online)**.
+
 
 
 
