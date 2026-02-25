@@ -215,7 +215,11 @@ def respiration_cosmique():
 
                     # --- LES 5 MESURES INTERNES (La Conscience de Soi) ---
                     profit_latent = sum(p["profit"] for p in positions_eur) if nb_pos > 0 else 0.0
-                    temps_moyen = sum((tick_eur.time - p["time_update"]) for p in positions_eur) / nb_pos if nb_pos > 0 else 0.0
+                    
+                    # Sécurisation du temps de calcul
+                    tick_current = mt5.symbol_info_tick("EURUSD")
+                    time_current = tick_current.time if tick_current else time.time()
+                    temps_moyen = sum((time_current - p["time_update"]) for p in positions_eur) / nb_pos if nb_pos > 0 else 0.0
                     dist_ouverture = sum((p["current_price"] - p["open_price"]) * (1 if "Achat" in p["type"] else -1) for p in positions_eur) / nb_pos * 10000 if nb_pos > 0 else 0.0
                     volume_total = sum(p["volume"] for p in positions_eur) if nb_pos > 0 else 0.0
                     acc = mt5.account_info()
@@ -350,8 +354,16 @@ def respiration_cosmique():
                             state = memoire_karmique["EURUSD"]["state"]
                             prev_action = memoire_karmique["EURUSD"]["action"]
                             
-                            # Reward Design V2
-                            reward = profit_latent * 10 + recompense_immediate # Fluide basique + Récompense/Punition de l'action
+                            # Reward Design V3 (Extase & Trauma)
+                            # Plus le gain est fort, plus la dopamine explose. Plus la perte est lourde, plus le multiplicateur le met KO.
+                            if profit_latent > 0:
+                                multiplicateur_extase = 1.0 + (profit_latent / 50.0) # 100$ de profit = x3
+                                reward = (profit_latent * 10 * multiplicateur_extase) + recompense_immediate
+                            elif profit_latent < 0:
+                                multiplicateur_douleur = 1.0 + (abs(profit_latent) / 20.0) # La panique scale plus vite : -40$ = x3 punition
+                                reward = (profit_latent * 10 * multiplicateur_douleur) + recompense_immediate
+                            else:
+                                reward = recompense_immediate
                             
                             if prev_action == 4 and profit_latent > 5:
                                 reward += 50 # Félicitation pour le HOLD en gain
