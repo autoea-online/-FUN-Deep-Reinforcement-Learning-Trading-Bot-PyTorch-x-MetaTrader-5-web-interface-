@@ -96,8 +96,9 @@ This is a **Reinforcement Learning** bot. It learns through a process called "Ch
 
 ---
 
-## ❄️ Brought to you by the creator of Snowfall
+## ❄️
 If you're interested in no-code risk management, or build your own Expert Advisors without coding at **[AutoEA.online](https://autoea.online)**.
+
 
 
 
